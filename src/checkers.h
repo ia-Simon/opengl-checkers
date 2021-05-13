@@ -34,16 +34,29 @@ class Checkers {
         double tableThickness = squareSide * 0.75;
         double tableRadius = squareSide * 8;
         glPushMatrix();
-        glColor3ub(127, 127, 127);
-        glTranslated(0, -squareSide/2, 0);
+    
+        glTranslated(0, -tableThickness -squareSide/2, 0);
         glRotated(90, -1, 0, 0);
-        gluDisk(quad, 0, tableRadius, 256, 1);
-        glTranslated(0, 0, -tableThickness);
+
+        glColor3ub(127, 127, 127);
+
+        glPushMatrix();
         glRotated(180, 1, 0, 0);
         gluDisk(quad, 0, tableRadius, 256, 1);
+        glPopMatrix();
+
+        glPushMatrix();
+        glTranslated(0, 0, tableThickness);
+        gluDisk(quad, 0, tableRadius, 256, 1);
+        glPopMatrix();
+
         glColor3ub(191, 163, 17);
-        glTranslated(0, 0, -tableThickness/2);
+
+        glPushMatrix();
+        glTranslated(0, 0, tableThickness/2);
         glutSolidTorus(tableThickness/2, tableRadius, 256, 256);
+        glPopMatrix();
+
         glPopMatrix();
         gluDeleteQuadric(quad);
     }
