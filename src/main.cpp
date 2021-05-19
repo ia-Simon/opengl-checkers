@@ -42,7 +42,7 @@ static void drawBoard(void);
 
 int main(int argc, char *argv[]) {
     glutInit(&argc, argv);
-    glutInitWindowSize(640, 480);
+    glutInitWindowSize(800, 600);
     glutInitWindowPosition(10, 10);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
@@ -147,8 +147,6 @@ static void mouseMoveCallback(int x, int y) {
 }
 
 static void display(void) {
-    const double t = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Reset transformations

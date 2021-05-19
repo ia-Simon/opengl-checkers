@@ -4,9 +4,11 @@ class Checkers {
     Piece darkPieces[12];
     Piece lightPieces[12];
 
-    void initBoard() {
+    void initGame() {
         double boardOrigin = (double) -(squareSide * 4) + (squareSide / 2);
         bool lightCube = true;
+        int darkPieceCounter = 0;
+        int lightPieceCounter = 0;
         for(int j = 0; j < 8; j++) {
             for(int i = 0; i < 8; i++) {
                 board[i][j] = Square(
@@ -16,16 +18,27 @@ class Checkers {
                     squareSide,
                     lightCube ? SQUARE_LIGHT : SQUARE_DARK
                 );
+                if(!lightCube) {
+                    Square square = board[i][j];
+                    if(j <= 2) {
+                        darkPieces[darkPieceCounter] = Piece(
+                            square.get_x(), 0, square.get_z(), 
+                            (squareSide/2) * 0.9, squareSide / 6,
+                            PIECE_DARK
+                        );
+                        darkPieceCounter++;
+                    } else if(5 <= j) {
+                        lightPieces[lightPieceCounter] = Piece(
+                            square.get_x(), 0, square.get_z(), 
+                            (squareSide/2) * 0.9, squareSide/6,
+                            PIECE_LIGHT
+                        );
+                        lightPieceCounter++;
+                    }
+                }
                 lightCube = !lightCube;
             }
             lightCube = !lightCube;
-        }
-    }
-    
-    void initPieces() {
-        for(int i = 0; i < 12; i++) {
-            darkPieces[i] = Piece(-12, i, -12, (squareSide/2) * 0.8, squareSide/6, PIECE_DARK);
-            lightPieces[i] = Piece(-9, i, -12, (squareSide/2) * 0.8, squareSide/6, PIECE_LIGHT);
         }
     }
 
@@ -50,11 +63,19 @@ class Checkers {
         gluDisk(quad, 0, tableRadius, 256, 1);
         glPopMatrix();
 
-        glColor3ub(191, 163, 17);
+        glColor3ub(143, 10, 41);
 
         glPushMatrix();
         glTranslated(0, 0, tableThickness/2);
         glutSolidTorus(tableThickness/2, tableRadius, 256, 256);
+        glPopMatrix();
+
+        glColor3ub(82, 27, 1);
+
+        glPushMatrix();
+        glTranslated(0, 0, tableThickness);
+        glRotated(45, 0, 0, 1);
+        glutSolidTorus(squareSide/2, (squareSide * 8 * sqrt(2)) / 2, 256, 4);
         glPopMatrix();
 
         glPopMatrix();
@@ -64,8 +85,7 @@ class Checkers {
     public:
         Checkers(double sqSide) {
             squareSide = sqSide;
-            initBoard();
-            initPieces();
+            initGame();
         }
 
         void render() {
