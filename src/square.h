@@ -35,7 +35,7 @@ class Square {
             glPushMatrix();
             switch (color) {
             case SQUARE_LIGHT:  glColor3ub(255, 244, 191); break;
-            case SQUARE_DARK:   glColor3ub(107, 27, 3); break;
+            case SQUARE_DARK:   glColor3ub(92, 23, 2); break;
             default:            glColor3ub(127, 127, 127); break;
             }
             glTranslated(x, y, z);

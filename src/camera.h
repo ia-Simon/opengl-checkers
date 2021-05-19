@@ -42,6 +42,9 @@ class CircularCamera {
         }
 
         void changeHeight(double heightDelta) {
-            posY += heightDelta;
+            if(posY + heightDelta < 2.5)
+                posY = 2.5;
+            else
+                posY += heightDelta;
         }
 };

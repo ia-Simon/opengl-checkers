@@ -52,30 +52,37 @@ class Checkers {
         glRotated(90, -1, 0, 0);
 
         glColor3ub(127, 127, 127);
-
+        // Table Top
         glPushMatrix();
         glRotated(180, 1, 0, 0);
         gluDisk(quad, 0, tableRadius, 256, 1);
         glPopMatrix();
-
+        // Table Bottom
         glPushMatrix();
         glTranslated(0, 0, tableThickness);
         gluDisk(quad, 0, tableRadius, 256, 1);
         glPopMatrix();
 
+        // Table Border
         glColor3ub(143, 10, 41);
-
         glPushMatrix();
         glTranslated(0, 0, tableThickness/2);
         glutSolidTorus(tableThickness/2, tableRadius, 256, 256);
         glPopMatrix();
 
-        glColor3ub(82, 27, 1);
-
+        // Board Border
         glPushMatrix();
-        glTranslated(0, 0, tableThickness);
         glRotated(45, 0, 0, 1);
-        glutSolidTorus(squareSide/2, (squareSide * 8 * sqrt(2)) / 2, 256, 4);
+        glColor3ub(59, 30, 2);
+        glTranslated(0, 0, tableThickness);
+        glutSolidTorus(squareSide * 0.24, (squareSide * 8 * sqrt(2)) / 2, 256, 4);
+        glColor3ub(255, 228, 153);
+        glTranslated(0, 0, squareSide/5);
+        glutSolidTorus(squareSide * 0.24, (squareSide * 8 * sqrt(2)) / 2, 256, 4);
+        glColor3ub(59, 30, 2);
+        glScaled(1.01, 1.01, 1);
+        glTranslated(0, 0, squareSide/5);
+        glutSolidTorus(squareSide * 0.125, (squareSide * 8 * sqrt(2)) / 2, 256, 4);
         glPopMatrix();
 
         glPopMatrix();
