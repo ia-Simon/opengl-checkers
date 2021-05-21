@@ -3,12 +3,13 @@ class Checkers {
     Square board[8][8];
     Piece darkPieces[12];
     Piece lightPieces[12];
+    bool turn;
 
     void initGame() {
         double boardOrigin = (double) -(squareSide * 4) + (squareSide / 2);
         bool lightCube = true;
         int darkPieceCounter = 0;
-        int lightPieceCounter = 0;
+        int lightPieceCounter = 11;
         for(int j = 0; j < 8; j++) {
             for(int i = 0; i < 8; i++) {
                 board[i][j] = Square(
@@ -16,7 +17,7 @@ class Checkers {
                     (double) -(squareSide / 2), 
                     (double) boardOrigin + (j * squareSide), 
                     squareSide,
-                    lightCube ? SQUARE_LIGHT : SQUARE_DARK
+                    lightCube ? LIGHT_SQUARE : DARK_SQUARE
                 );
                 if(!lightCube) {
                     Square square = board[i][j];
@@ -24,16 +25,16 @@ class Checkers {
                         darkPieces[darkPieceCounter] = Piece(
                             square.get_x(), 0, square.get_z(), 
                             (squareSide/2) * 0.9, squareSide / 6,
-                            PIECE_DARK
+                            DARK_PIECE
                         );
                         darkPieceCounter++;
                     } else if(5 <= j) {
                         lightPieces[lightPieceCounter] = Piece(
                             square.get_x(), 0, square.get_z(), 
                             (squareSide/2) * 0.9, squareSide/6,
-                            PIECE_LIGHT
+                            LIGHT_PIECE
                         );
-                        lightPieceCounter++;
+                        lightPieceCounter--;
                     }
                 }
                 lightCube = !lightCube;
@@ -90,8 +91,14 @@ class Checkers {
     }
 
     public:
+        Cycle darkPieceSelector;
+        Cycle lightPieceSelector;
+
         Checkers(double sqSide) {
             squareSide = sqSide;
+            turn = false;
+            darkPieceSelector = Cycle(12);
+            lightPieceSelector = Cycle(12);
             initGame();
         }
 
@@ -104,5 +111,9 @@ class Checkers {
                 darkPieces[i].render();
                 lightPieces[i].render();
             }
+        }
+
+        void nextTurn() {
+            turn = !turn;
         }
 };

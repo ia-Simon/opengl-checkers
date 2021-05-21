@@ -1,22 +1,24 @@
-#define SQUARE_DARK 0
-#define SQUARE_LIGHT 1
+typedef int SquareType;
+
+const SquareType DARK_SQUARE = 0;
+const SquareType LIGHT_SQUARE = 1;
 
 class Square {
     double x;
     double y;
     double z;
     double side;
-    int color;
+    int sqType;
 
     public:
         Square() {}
 
-        Square(double xPos, double yPos, double zPos, double sqSide, int sqColor) {
+        Square(double xPos, double yPos, double zPos, double sqSide, SquareType squareType) {
             x = xPos;
             y = yPos;
             z = zPos;
             side = sqSide;
-            color = sqColor;
+            sqType = squareType;
         }
         double get_x() {
             return x;
@@ -27,15 +29,15 @@ class Square {
         double get_z() {
             return z;
         }
-        int get_color() {
-            return color;
+        int get_sqType() {
+            return sqType;
         }
 
         void render() {
             glPushMatrix();
-            switch (color) {
-            case SQUARE_LIGHT:  glColor3ub(255, 244, 191); break;
-            case SQUARE_DARK:   glColor3ub(92, 23, 2); break;
+            switch (sqType) {
+            case LIGHT_SQUARE:  glColor3ub(255, 244, 191); break;
+            case DARK_SQUARE:   glColor3ub(92, 23, 2); break;
             default:            glColor3ub(127, 127, 127); break;
             }
             glTranslated(x, y, z);

@@ -8,9 +8,11 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <iostream>
 #include "camera.h"
 #include "square.h"
 #include "piece.h"
+#include "cycle.h"
 #include "checkers.h"
 
 const GLfloat light_ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -61,6 +63,9 @@ int main(int argc, char *argv[]) {
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_LIGHT0);
     glEnable(GL_NORMALIZE);
