@@ -4,13 +4,14 @@ const PieceType DARK_PIECE = 0;
 const PieceType LIGHT_PIECE = 1;
 
 class Piece {
+    GLUquadric *quad;
     double x;
     double y;
     double z;
     double radius;
     double height;
     PieceType pcType;
-    GLUquadric *quad;
+    std::array<int, 2> posOnBoard;
 
     void solidPiece() {
         glRotated(90, -1, 0, 0);
@@ -68,61 +69,53 @@ class Piece {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    public:
-        Piece() {quad = gluNewQuadric();}
+public:
+    Piece() {quad = gluNewQuadric();}
 
-        Piece(double xPos, double yPos, double zPos, double pcRadius, double pcHeight, PieceType pieceType) {
-            x = xPos;
-            y = yPos;
-            z = zPos;
-            radius = pcRadius;
-            height = pcHeight;
-            pcType = pieceType;
-            quad = gluNewQuadric();
-        }
-        double get_x() {
-            return x;
-        }
-        double get_y() {
-            return y;
-        }
-        double get_z() {
-            return z;
-        }
-        int get_pcType() {
-            return pcType;
-        }
-        void set_x(double xPos) {
-            x = xPos;
-        }
-        void set_y(double yPos) {
-            y = yPos;
-        }
-        void set_z(double zPos) {
-            z = zPos;
-        }
-
-        void render() {
+    Piece(double xPos, double yPos, double zPos, double pcRadius, double pcHeight, 
+    PieceType pieceType, std::array<int,2> positionOnBoard) {
+        quad = gluNewQuadric();
+        x = xPos;
+        y = yPos;
+        z = zPos;
+        radius = pcRadius;
+        height = pcHeight;
+        pcType = pieceType; 
+        posOnBoard = positionOnBoard;
+    }
+    double get_x() { return x; }
+    double get_y() { return y; }
+    double get_z() { return z; }
+    const std::array<int,2> &get_posOnBoard() { return posOnBoard; }
+    void set_x(double xPos) { x = xPos; }
+    void set_y(double yPos) { y = yPos; }
+    void set_z(double zPos) { z = zPos; }
+    void set_posOnBoard(std::array<int,2> positionOnBoard) { posOnBoard = positionOnBoard; }
+    
+    void render(bool isSelected) {
+        glPushMatrix();
+        glTranslated(x, y, z);
+        //Solid Piece
+            glPushMatrix();
+            switch (pcType) {
+            case LIGHT_PIECE:   glColor3ub(220, 220, 220); break;
+            case DARK_PIECE:    glColor3ub(32, 32, 32); break;
+            default:            glColor3ub(127, 127, 127); break;
+            }
+            solidPiece();
+            glPopMatrix();
+        //Wire Piece
+        if(isSelected) {
             const int t = glutGet(GLUT_ELAPSED_TIME);
             const int wirePeriod = 1500;
             double wireIntensity = abs(((double) (t % wirePeriod) / (wirePeriod/2)) - 1);
+
             glPushMatrix();
-            glTranslated(x, y, z);
-            //Solid Piece
-                glPushMatrix();
-                switch (pcType) {
-                case LIGHT_PIECE:   glColor3ub(240, 240, 240); break;
-                case DARK_PIECE:    glColor3ub(32, 32, 32); break;
-                default:            glColor3ub(127, 127, 127); break;
-                }
-                solidPiece();
-                glPopMatrix();
-            //Wire Piece
-                glPushMatrix();
-                glColor4ub(43, 255, 15, wireIntensity * 200);
-                glScaled(1.005, 1.005, 1.005);
-                wirePiece();
-                glPopMatrix();
+            glColor4ub(43, 255, 15, wireIntensity * 200);
+            glScaled(1.005, 1.005, 1.005);
+            wirePiece();
             glPopMatrix();
         }
+        glPopMatrix();
+    }
 };

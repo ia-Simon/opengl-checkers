@@ -9,13 +9,14 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+#include <array>
 #include "camera.h"
 #include "square.h"
 #include "piece.h"
 #include "cycle.h"
 #include "checkers.h"
 
-const GLfloat light_ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
+const GLfloat light_ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
 const GLfloat light_diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 const GLfloat light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
 const GLfloat light_position[] = {2.0f, 5.0f, 5.0f, 0.0f};
@@ -110,6 +111,9 @@ static void keyboardCallback(unsigned char key, int x, int y) {
 			break;
         case '-' :
             mouseSense -= 0.01;
+            break;
+        case 'a' :
+            
             break;
         case 27 : //ESC
             exit(0);

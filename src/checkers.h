@@ -1,17 +1,23 @@
+typedef int CheckersTurn;
+
+const CheckersTurn DARK_TURN = 0;
+const CheckersTurn LIGHT_TURN = 1;
 class Checkers {
     double squareSide;
-    Square board[8][8];
-    Piece darkPieces[12];
-    Piece lightPieces[12];
-    bool turn;
+    std::array<std::array<Square,8>,8> board;
+    std::array<Piece,12> darkPieces;
+    std::array<Piece,12> lightPieces;
+    Cycle darkPieceSelector;
+    Cycle lightPieceSelector;
+    int turnCounter;
 
-    void initGame() {
+    void initBoardAndPieces() {
         double boardOrigin = (double) -(squareSide * 4) + (squareSide / 2);
         bool lightCube = true;
         int darkPieceCounter = 0;
         int lightPieceCounter = 11;
-        for(int j = 0; j < 8; j++) {
-            for(int i = 0; i < 8; i++) {
+        for(size_t j = 0; j < 8; j++) {
+            for(size_t i = 0; i < 8; i++) {
                 board[i][j] = Square(
                     (double) boardOrigin + (i * squareSide), 
                     (double) -(squareSide / 2), 
@@ -21,18 +27,19 @@ class Checkers {
                 );
                 if(!lightCube) {
                     Square square = board[i][j];
+                    std::array<int,2> posOnBoard = {i, j};
                     if(j <= 2) {
                         darkPieces[darkPieceCounter] = Piece(
                             square.get_x(), 0, square.get_z(), 
                             (squareSide/2) * 0.9, squareSide / 6,
-                            DARK_PIECE
+                            DARK_PIECE, posOnBoard
                         );
                         darkPieceCounter++;
                     } else if(5 <= j) {
                         lightPieces[lightPieceCounter] = Piece(
                             square.get_x(), 0, square.get_z(), 
                             (squareSide/2) * 0.9, squareSide/6,
-                            LIGHT_PIECE
+                            LIGHT_PIECE, posOnBoard
                         );
                         lightPieceCounter--;
                     }
@@ -90,30 +97,89 @@ class Checkers {
         gluDeleteQuadric(quad);
     }
 
-    public:
-        Cycle darkPieceSelector;
-        Cycle lightPieceSelector;
+    void renderBoard() {
+        for(size_t j = 0; j < 8; j++)
+            for(size_t i = 0; i < 8; i++)
+                board[i][j].render();
+    }
 
-        Checkers(double sqSide) {
-            squareSide = sqSide;
-            turn = false;
-            darkPieceSelector = Cycle(12);
-            lightPieceSelector = Cycle(12);
-            initGame();
+    void renderPieces() {
+        for(size_t i = 0; i < 12; i++) {
+            darkPieces[i].render(getTurn() == DARK_TURN && i == darkPieceSelector.get_value());
+            lightPieces[i].render(getTurn() == LIGHT_TURN && i == lightPieceSelector.get_value());
         }
+    }
 
-        void render() {
-            renderTable();
-            for(int j = 0; j < 8; j++)
-                for(int i = 0; i < 8; i++)
-                    board[i][j].render();
-            for(int i = 0; i < 12; i++) {
-                darkPieces[i].render();
-                lightPieces[i].render();
-            }
-        }
+    Piece &getActivePiece() {
+        return getTurn() == DARK_TURN ? 
+            darkPieces[darkPieceSelector.get_value()] :
+            lightPieces[lightPieceSelector.get_value()];
+    }
 
-        void nextTurn() {
-            turn = !turn;
+    void movePiece(Piece &piece, double newXPos, double newZPos) {
+        const double stepSize = 0.05;
+        double xStepSize = piece.get_x() < newXPos ? stepSize : -stepSize;
+        double zStepSize = piece.get_z() < newZPos ? stepSize : -stepSize;
+        int moveStepCount = 100;
+        for(int i = 0; i < moveStepCount; i++) {
+            
         }
+    }
+
+public:
+    Checkers(double sqSide) {
+        squareSide = sqSide;
+        darkPieceSelector = Cycle(12);
+        lightPieceSelector = Cycle(12);
+        turnCounter = 0;
+        initBoardAndPieces();
+    }
+
+    CheckersTurn getTurn() {
+        return turnCounter % 2;
+    }
+
+    void render() {
+        renderTable();
+        renderBoard();
+        renderPieces();
+    }
+
+    void selectNextPiece() {
+        getTurn() == DARK_TURN ? darkPieceSelector.next() : lightPieceSelector.next();
+    }
+
+    void selectPrevPiece() {
+        getTurn() == DARK_TURN ? darkPieceSelector.prev() : lightPieceSelector.prev();
+    }
+
+    void moveUpRight() {
+        Piece &piece = getActivePiece();   
+        const std::array<int,2> &posOnBoard = piece.get_posOnBoard();
+        if(posOnBoard[0] == -1 || posOnBoard[1] == -1) return;
+
+        std::array<int,2> newPos = {posOnBoard[0] + 1, posOnBoard[1] + 1};
+
+    }
+
+    void moveUpLeft() {
+        Piece &piece = getActivePiece();   
+        const std::array<int,2> &posOnBoard = piece.get_posOnBoard();
+        if(posOnBoard[0] == -1 || posOnBoard[1] == -1) return;
+
+    }
+
+    void moveDownRight() {
+        Piece &piece = getActivePiece();   
+        const std::array<int,2> &posOnBoard = piece.get_posOnBoard();
+        if(posOnBoard[0] == -1 || posOnBoard[1] == -1) return;
+
+    }
+
+    void moveDownLeft() {
+        Piece &piece = getActivePiece();   
+        const std::array<int,2> &posOnBoard = piece.get_posOnBoard();
+        if(posOnBoard[0] == -1 || posOnBoard[1] == -1) return;
+
+    }
 };

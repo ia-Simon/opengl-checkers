@@ -1,5 +1,5 @@
 typedef struct Value {
-    int num;
+    size_t num;
     struct Value *prev;
     struct Value *next;
 } Value;
@@ -10,11 +10,11 @@ class Cycle {
     public:
         Cycle() {}
         
-        Cycle(int size) {
+        Cycle(size_t size) {
             Value *first = new Value;
             first->num = 0;
             value = first;
-            for(int i = 1; i < size; i++) {
+            for(size_t i = 1; i < size; i++) {
                 Value *aux = new Value;
                 aux->num = i;
                 aux->prev = value;
@@ -34,7 +34,7 @@ class Cycle {
             value = value->prev;
         }
 
-        int get_value() {
+        size_t get_value() {
             return value->num;
         }
 };
