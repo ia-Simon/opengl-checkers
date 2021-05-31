@@ -1,21 +1,32 @@
-typedef int CheckersTurn;
+enum CheckersTurn {
+    DARK_TURN,
+    LIGHT_TURN,
+};
 
-const CheckersTurn DARK_TURN = 0;
-const CheckersTurn LIGHT_TURN = 1;
+enum MoveDirection {
+    UP_RIGHT,
+    UP_LEFT,
+    DOWN_RIGHT,
+    DOWN_LEFT,
+};
+
 class Checkers {
     double squareSide;
     std::array<std::array<Square,8>,8> board;
-    std::array<Piece,12> darkPieces;
-    std::array<Piece,12> lightPieces;
-    Cycle darkPieceSelector;
-    Cycle lightPieceSelector;
+    std::vector<Piece> darkPieces;
+    std::vector<Piece> lightPieces;
+    Selector darkPieceSelector;
+    Selector lightPieceSelector;
     int turnCounter;
 
-    void initBoardAndPieces() {
+    Piece *animatedPiece;
+    std::array<size_t,2> animateFrom;
+    std::array<size_t,2> animateTo;
+    int animationStartTime;
+
+    void initBoard() {
         double boardOrigin = (double) -(squareSide * 4) + (squareSide / 2);
         bool lightCube = true;
-        int darkPieceCounter = 0;
-        int lightPieceCounter = 11;
         for(size_t j = 0; j < 8; j++) {
             for(size_t i = 0; i < 8; i++) {
                 board[i][j] = Square(
@@ -25,28 +36,34 @@ class Checkers {
                     squareSide,
                     lightCube ? LIGHT_SQUARE : DARK_SQUARE
                 );
-                if(!lightCube) {
-                    Square square = board[i][j];
-                    std::array<int,2> posOnBoard = {i, j};
-                    if(j <= 2) {
-                        darkPieces[darkPieceCounter] = Piece(
-                            square.get_x(), 0, square.get_z(), 
-                            (squareSide/2) * 0.9, squareSide / 6,
-                            DARK_PIECE, posOnBoard
-                        );
-                        darkPieceCounter++;
-                    } else if(5 <= j) {
-                        lightPieces[lightPieceCounter] = Piece(
-                            square.get_x(), 0, square.get_z(), 
-                            (squareSide/2) * 0.9, squareSide/6,
-                            LIGHT_PIECE, posOnBoard
-                        );
-                        lightPieceCounter--;
-                    }
-                }
                 lightCube = !lightCube;
             }
             lightCube = !lightCube;
+        }
+    }
+
+    void initPieces() {
+        for(size_t j = 0; j < 8; j++) {
+            for(size_t i = 0; i < 8; i++) {
+                Square &square = board[i][j];
+                if(square.get_sqType() == LIGHT_SQUARE) continue;
+
+                if(j <= 2) {
+                    lightPieces.insert(lightPieces.begin(), Piece(
+                        square.get_x(), 0, square.get_z(), 
+                        (squareSide/2) * 0.9, squareSide / 6,
+                        LIGHT_PIECE, std::array{i, j}
+                    ));
+                    square.set_pcAlloc(LIGHT_PIECE);
+                } else if(5 <= j) {
+                    darkPieces.push_back(Piece(
+                        square.get_x(), 0, square.get_z(), 
+                        (squareSide/2) * 0.9, squareSide/6,
+                        DARK_PIECE, std::array{i, j}
+                    ));
+                    square.set_pcAlloc(DARK_PIECE);
+                }
+            }
         }
     }
 
@@ -98,88 +115,156 @@ class Checkers {
     }
 
     void renderBoard() {
+        std::array<size_t,2> activePcPos = getActivePiece().get_posOnBoard();
+
         for(size_t j = 0; j < 8; j++)
             for(size_t i = 0; i < 8; i++)
-                board[i][j].render();
+                board[i][j].render(abs((double)i - activePcPos[0]) == 1 && abs((double)j - activePcPos[1]) == 1);
     }
 
     void renderPieces() {
-        for(size_t i = 0; i < 12; i++) {
-            darkPieces[i].render(getTurn() == DARK_TURN && i == darkPieceSelector.get_value());
-            lightPieces[i].render(getTurn() == LIGHT_TURN && i == lightPieceSelector.get_value());
-        }
+        Piece &activePiece = getActivePiece();
+
+        for(Piece &piece : darkPieces)
+            piece.render(&piece == &activePiece);
+            
+        for(Piece &piece : lightPieces)
+            piece.render(&piece == &activePiece);
     }
 
     Piece &getActivePiece() {
         return getTurn() == DARK_TURN ? 
-            darkPieces[darkPieceSelector.get_value()] :
-            lightPieces[lightPieceSelector.get_value()];
+            darkPieces.at(darkPieceSelector.get_val()) :
+            lightPieces.at(lightPieceSelector.get_val());
     }
 
-    void movePiece(Piece &piece, double newXPos, double newZPos) {
-        const double stepSize = 0.05;
-        double xStepSize = piece.get_x() < newXPos ? stepSize : -stepSize;
-        double zStepSize = piece.get_z() < newZPos ? stepSize : -stepSize;
-        int moveStepCount = 100;
-        for(int i = 0; i < moveStepCount; i++) {
-            
+    bool isValidPos(std::array<size_t,2> pos) {
+        return pos[0] < 8 && pos[1] < 8;
+    }
+
+    bool isEmptyPos(std::array<size_t,2> pos) {
+        return board[pos[0]][pos[1]].get_pcAlloc() == NA;
+    }
+
+    bool isOpponentPos(std::array<size_t,2> pos) {
+        CheckersTurn turn = getTurn();
+        PieceType pcTypeOnPos = board[pos[0]][pos[1]].get_pcAlloc();
+        return (turn == DARK_TURN && pcTypeOnPos == LIGHT_PIECE) ||
+               (turn == LIGHT_TURN && pcTypeOnPos == DARK_PIECE);
+    }
+    
+    void nextTurn() {
+        turnCounter++;
+    }
+
+    void animateMove() {
+        // std::cout << animatedPiece << std::endl;
+        if(animatedPiece == NULL) return;
+
+        Square &orgSquare = board[animateFrom[0]][animateFrom[1]];
+        Square &destSquare = board[animateTo[0]][animateTo[1]];
+
+        const int t = glutGet(GLUT_ELAPSED_TIME);
+        const int animationPeriod = 600;
+        if(animationStartTime == -1) animationStartTime = t;
+        double animationPercent = (double) (t - animationStartTime)/animationPeriod;
+        double yMax = 1.5;
+
+        double xDiff = destSquare.get_x() - orgSquare.get_x();
+        double zDiff = destSquare.get_z() - orgSquare.get_z();
+        animatedPiece->set_x(orgSquare.get_x() + (xDiff * animationPercent));
+        animatedPiece->set_z(orgSquare.get_z() + (zDiff * animationPercent));
+        animatedPiece->set_y(yMax * sin(M_PI * animationPercent));
+        cam.translate(pow(animationPercent, (double) animationPeriod / 71.4285) * ((getTurn() == DARK_TURN ? 270 : 90) - cam.get_pathAngle()));
+        if(t > (animationStartTime + animationPeriod)) {
+            animatedPiece->set_x(destSquare.get_x());
+            animatedPiece->set_z(destSquare.get_z());
+            animatedPiece->set_y(0);
+            cam.set_pathAngle(getTurn() == DARK_TURN ? 270 : 90);
+            orgSquare.set_pcAlloc(NA);
+            animatedPiece->set_posOnBoard(animateTo);
+            destSquare.set_pcAlloc(animatedPiece->get_pcType());
+            animatedPiece = nullptr;
+            animationStartTime = -1;
+            nextTurn();
+        }
+    }
+
+    std::array<size_t,2> calcNewPos(std::array<size_t,2> pos, MoveDirection direction) {
+        switch (direction) {
+        case UP_LEFT:   return getTurn() == DARK_TURN ? std::array{pos[0] - 1, pos[1] - 1} : std::array{pos[0] + 1, pos[1] + 1};
+        case UP_RIGHT:  return getTurn() == DARK_TURN ? std::array{pos[0] + 1, pos[1] - 1} : std::array{pos[0] - 1, pos[1] + 1};
+        case DOWN_LEFT: return getTurn() == DARK_TURN ? std::array{pos[0] - 1, pos[1] + 1} : std::array{pos[0] + 1, pos[1] - 1};
+        case DOWN_RIGHT:return getTurn() == DARK_TURN ? std::array{pos[0] + 1, pos[1] + 1} : std::array{pos[0] - 1, pos[1] - 1};
+        default: throw;
         }
     }
 
 public:
-    Checkers(double sqSide) {
+    CircularCamera cam;
+
+    Checkers(double sqSide, double camXZpathRadius, double camYheight) {
         squareSide = sqSide;
-        darkPieceSelector = Cycle(12);
-        lightPieceSelector = Cycle(12);
+        initBoard();
+        initPieces();
+        darkPieceSelector = Selector(darkPieces.size());
+        lightPieceSelector = Selector(lightPieces.size());
         turnCounter = 0;
-        initBoardAndPieces();
+
+        animatedPiece = nullptr;
+        animateFrom = {0, 0};
+        animateTo = {0, 0};
+        animationStartTime = -1;
+
+        cam = CircularCamera(camXZpathRadius, camYheight);
     }
 
     CheckersTurn getTurn() {
-        return turnCounter % 2;
+        return (turnCounter % 2 == 0) ? DARK_TURN : LIGHT_TURN;
     }
 
     void render() {
+        animateMove();
         renderTable();
         renderBoard();
         renderPieces();
     }
 
-    void selectNextPiece() {
+    void nextPiece() {
         getTurn() == DARK_TURN ? darkPieceSelector.next() : lightPieceSelector.next();
     }
 
-    void selectPrevPiece() {
+    void prevPiece() {
         getTurn() == DARK_TURN ? darkPieceSelector.prev() : lightPieceSelector.prev();
     }
 
-    void moveUpRight() {
-        Piece &piece = getActivePiece();   
-        const std::array<int,2> &posOnBoard = piece.get_posOnBoard();
-        if(posOnBoard[0] == -1 || posOnBoard[1] == -1) return;
+    void movePiece(MoveDirection direction) {
+        if(animatedPiece != NULL) return;
+        
+        Piece &piece = getActivePiece();
+        const std::array<size_t,2> &pos = piece.get_posOnBoard();
+        std::array<size_t,2> newPos;
+        try {
+            newPos = calcNewPos(pos, direction);
+        } catch(const std::exception& e) {
+            return;
+        }   
 
-        std::array<int,2> newPos = {posOnBoard[0] + 1, posOnBoard[1] + 1};
-
-    }
-
-    void moveUpLeft() {
-        Piece &piece = getActivePiece();   
-        const std::array<int,2> &posOnBoard = piece.get_posOnBoard();
-        if(posOnBoard[0] == -1 || posOnBoard[1] == -1) return;
-
-    }
-
-    void moveDownRight() {
-        Piece &piece = getActivePiece();   
-        const std::array<int,2> &posOnBoard = piece.get_posOnBoard();
-        if(posOnBoard[0] == -1 || posOnBoard[1] == -1) return;
-
-    }
-
-    void moveDownLeft() {
-        Piece &piece = getActivePiece();   
-        const std::array<int,2> &posOnBoard = piece.get_posOnBoard();
-        if(posOnBoard[0] == -1 || posOnBoard[1] == -1) return;
-
+        if(isValidPos(newPos) && isEmptyPos(newPos)) {
+            animatedPiece = &piece;
+            animateFrom = pos;
+            animateTo = newPos;
+        } else if(isValidPos(newPos) && isOpponentPos(newPos)) {
+            try {
+                newPos = calcNewPos(newPos, direction);
+            } catch(const std::exception& e) {
+                return;
+            }
+            if(isValidPos(newPos) && isEmptyPos(newPos)) {
+                animatedPiece = &piece;
+                animateFrom = pos;
+                animateTo = newPos;
+            }
+        }
     }
 };

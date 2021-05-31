@@ -10,10 +10,11 @@
 #include <math.h>
 #include <iostream>
 #include <array>
+#include <vector>
 #include "camera.h"
-#include "square.h"
 #include "piece.h"
-#include "cycle.h"
+#include "square.h"
+#include "selector.h"
 #include "checkers.h"
 
 const GLfloat light_ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
@@ -26,13 +27,12 @@ const GLfloat mat_diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
 const GLfloat mat_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
 const GLfloat high_shininess[] = {100.0f};
 
-CircularCamera cam = CircularCamera(16.0f, 12.0f);
+Checkers checkers = Checkers(2.0f, 16.0f, 12.0f);
 bool mouseShiftMod = false;
 float mouseSense = 0.25;
 float mouseXOrg = -1;
 float mouseYOrg = -1;
 
-Checkers checkers = Checkers(2.0f);
 
 static void idle(void);
 static void resize(int width, int height);
@@ -112,8 +112,23 @@ static void keyboardCallback(unsigned char key, int x, int y) {
         case '-' :
             mouseSense -= 0.01;
             break;
-        case 'a' :
-            
+        case '[' :
+            checkers.prevPiece();
+            break;
+        case ']' :
+            checkers.nextPiece();
+            break;
+        case 'q' :
+            checkers.movePiece(UP_LEFT);
+            break;
+        case 'e' :
+            checkers.movePiece(UP_RIGHT);
+            break;
+        case 'z' :
+            checkers.movePiece(DOWN_LEFT);
+            break;
+        case 'c' :
+            checkers.movePiece(DOWN_RIGHT);
             break;
         case 27 : //ESC
             exit(0);
@@ -138,6 +153,8 @@ static void mouseCallback(int button, int state, int x, int y) {
             glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
         }
     }
+
+    glutPostRedisplay();
 }
 
 static void mouseMoveCallback(int x, int y) {
@@ -146,11 +163,11 @@ static void mouseMoveCallback(int x, int y) {
     mouseXOrg = x;
     mouseYOrg = y;
 
-    cam.translate(deltaX * mouseSense);
+    checkers.cam.translate(deltaX * mouseSense);
     if (mouseShiftMod)
-        cam.changeHeight(deltaY * (mouseSense/2));
+        checkers.cam.changeHeight(deltaY * (mouseSense/2));
     else 
-        cam.scaleRadius(-deltaY * (mouseSense/2));
+        checkers.cam.scaleRadius(-deltaY * (mouseSense/2));
 
     glutPostRedisplay();
 }
@@ -162,11 +179,11 @@ static void display(void) {
 	glLoadIdentity();
 
 	// Set the camera
-	gluLookAt(cam.get_posX(), cam.get_posY(), cam.get_posZ(),
+	gluLookAt(checkers.cam.get_posX(), checkers.cam.get_posY(), checkers.cam.get_posZ(),
 			  0.0f, 0.0f,  0.0f,
 		      0.0f, 1.0f,  0.0f);
 
-    // Draw checkers board
+    // Draw checkers game
     checkers.render();
 
     glutSwapBuffers();

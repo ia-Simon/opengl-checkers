@@ -1,7 +1,8 @@
-typedef int PieceType;
-
-const PieceType DARK_PIECE = 0;
-const PieceType LIGHT_PIECE = 1;
+enum PieceType {
+    DARK_PIECE,
+    LIGHT_PIECE,
+    NA,
+};
 
 class Piece {
     GLUquadric *quad;
@@ -11,7 +12,7 @@ class Piece {
     double radius;
     double height;
     PieceType pcType;
-    std::array<int, 2> posOnBoard;
+    std::array<size_t,2> posOnBoard;
 
     void solidPiece() {
         glRotated(90, -1, 0, 0);
@@ -73,7 +74,7 @@ public:
     Piece() {quad = gluNewQuadric();}
 
     Piece(double xPos, double yPos, double zPos, double pcRadius, double pcHeight, 
-    PieceType pieceType, std::array<int,2> positionOnBoard) {
+    PieceType pieceType, std::array<size_t,2> positionOnBoard) {
         quad = gluNewQuadric();
         x = xPos;
         y = yPos;
@@ -86,13 +87,14 @@ public:
     double get_x() { return x; }
     double get_y() { return y; }
     double get_z() { return z; }
-    const std::array<int,2> &get_posOnBoard() { return posOnBoard; }
+    const std::array<size_t,2> &get_posOnBoard() { return posOnBoard; }
+    PieceType get_pcType() { return pcType; }
     void set_x(double xPos) { x = xPos; }
     void set_y(double yPos) { y = yPos; }
     void set_z(double zPos) { z = zPos; }
-    void set_posOnBoard(std::array<int,2> positionOnBoard) { posOnBoard = positionOnBoard; }
+    void set_posOnBoard(std::array<size_t,2> positionOnBoard) { posOnBoard = positionOnBoard; }
     
-    void render(bool isSelected) {
+    void render(bool glow) {
         glPushMatrix();
         glTranslated(x, y, z);
         //Solid Piece
@@ -105,7 +107,7 @@ public:
             solidPiece();
             glPopMatrix();
         //Wire Piece
-        if(isSelected) {
+        if(glow) {
             const int t = glutGet(GLUT_ELAPSED_TIME);
             const int wirePeriod = 1500;
             double wireIntensity = abs(((double) (t % wirePeriod) / (wirePeriod/2)) - 1);
