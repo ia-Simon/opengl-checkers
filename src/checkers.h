@@ -182,19 +182,23 @@ class Checkers {
     }
     
     void nextTurn() {
-        turnCounter++;
+        std::vector<Piece> &opponentPieces = getTurn() == DARK_TURN ? lightPieces : darkPieces;
+        if(opponentPieces.empty())
+            turnCounter += 2;
+        else
+            turnCounter++;
     }
 
     void animateCam() {
         if(camAnimAngle == -1) return;
 
         const int t = glutGet(GLUT_ELAPSED_TIME);
-        const int animationPeriod = 4000;
+        const int animationPeriod = 750;
         if(camAnimStartTime == -1 || camAnimAngle != lastCamAnimAngle) camAnimStartTime = t;
         lastCamAnimAngle = camAnimAngle;
         double animationPercent = (double) (t - camAnimStartTime)/animationPeriod;
 
-        cam.translate((-0.5 * cos(2 * M_PI * animationPercent) + 0.5) * (camAnimAngle - cam.get_pathAngle()));
+        cam.translate((-0.2 * cos(2 * M_PI * animationPercent) + 0.2) * (camAnimAngle - cam.get_pathAngle()));
         if(t >= (camAnimStartTime + animationPeriod)) {
             cam.set_pathAngle(camAnimAngle);
             camAnimAngle = -1;
