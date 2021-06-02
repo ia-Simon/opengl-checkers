@@ -122,9 +122,22 @@ class Checkers {
     void renderBoard() {
         std::array<size_t,2> activePcPos = getActivePiece().get_posOnBoard();
 
-        for(size_t j = 0; j < 8; j++)
-            for(size_t i = 0; i < 8; i++)
-                board[i][j].render(abs((double)i - activePcPos[0]) == 1 && abs((double)j - activePcPos[1]) == 1);
+        for(size_t j = 0; j < 8; j++) {
+            for(size_t i = 0; i < 8; i++) {
+                Square &square = board[i][j];
+                bool shouldGlowAdjacent = 
+                    abs((double)i - activePcPos[0]) == 1 && 
+                    abs((double)j - activePcPos[1]) == 1 &&
+                    square.get_pcAlloc() == NA;
+                bool shouldGlowEating = 
+                    abs((double)i - activePcPos[0]) == 2 && 
+                    abs((double)j - activePcPos[1]) == 2 &&
+                    square.get_pcAlloc() == NA &&
+                    board[(i + activePcPos[0])/2][(j + activePcPos[1])/2]
+                        .get_pcAlloc() == (getTurn() == DARK_TURN ? LIGHT_PIECE : DARK_PIECE);
+                square.render(shouldGlowAdjacent || shouldGlowEating);
+            }
+        }
     }
 
     void renderPieces() {
