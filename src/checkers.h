@@ -25,6 +25,10 @@ class Checkers {
     std::array<size_t,2> animateTo;
     int pieceAnimStartTime;
 
+    int camAnimStartTime;
+    int camAnimAngle;
+    int lastCamAnimAngle;
+
     void initBoard() {
         double boardOrigin = (double) -(squareSide * 4) + (squareSide / 2);
         bool lightCube = true;
@@ -169,13 +173,20 @@ class Checkers {
     }
 
     void animateCam() {
-        // const int t = glutGet(GLUT_ELAPSED_TIME);
-        // const int camSwipePeriod = 2000;
-        // while(true) {
-        //     cam.translate((t - startTime)/camSwipePeriod * ((getTurn() == DARK_TURN ? 270 : 90) - cam.get_pathAngle()));
-        //     glutPostRedisplay();
-        // }
-        // cam.set_pathAngle(getTurn() == DARK_TURN ? 270 : 90);
+        if(camAnimAngle == -1) return;
+
+        const int t = glutGet(GLUT_ELAPSED_TIME);
+        const int animationPeriod = 4000;
+        if(camAnimStartTime == -1 || camAnimAngle != lastCamAnimAngle) camAnimStartTime = t;
+        lastCamAnimAngle = camAnimAngle;
+        double animationPercent = (double) (t - camAnimStartTime)/animationPeriod;
+
+        cam.translate((-0.5 * cos(2 * M_PI * animationPercent) + 0.5) * (camAnimAngle - cam.get_pathAngle()));
+        if(t >= (camAnimStartTime + animationPeriod)) {
+            cam.set_pathAngle(camAnimAngle);
+            camAnimAngle = -1;
+            camAnimStartTime = -1;
+        }
     }
 
     void animateMove() {
@@ -225,6 +236,7 @@ class Checkers {
                 eatenPiece = nullptr;
             } else {
                 nextTurn();
+                camAnimAngle = getTurn() == DARK_TURN ? 90 : 270;
             }
         }
     }
@@ -246,6 +258,10 @@ public:
         animateTo = {0, 0};
         pieceAnimStartTime = -1;
 
+        camAnimAngle = -1;
+        camAnimStartTime = -1;
+        lastCamAnimAngle = camAnimAngle;
+
         cam = CircularCamera(camXZpathRadius, camYheight);
     }
 
@@ -255,6 +271,7 @@ public:
 
     void render() {
         animateMove();
+        animateCam();
         renderTable();
         renderBoard();
         renderPieces();
