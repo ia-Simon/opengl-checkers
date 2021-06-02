@@ -130,6 +130,9 @@ static void keyboardCallback(unsigned char key, int x, int y) {
         case 'c' :
             checkers.movePiece(DOWN_RIGHT);
             break;
+        case 's' :
+            checkers.nextTurn();
+            break;
         case 27 : //ESC
             exit(0);
 	}

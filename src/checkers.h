@@ -180,14 +180,6 @@ class Checkers {
         return (turn == DARK_TURN && pcTypeOnPos == LIGHT_PIECE) ||
                (turn == LIGHT_TURN && pcTypeOnPos == DARK_PIECE);
     }
-    
-    void nextTurn() {
-        std::vector<Piece> &opponentPieces = getTurn() == DARK_TURN ? lightPieces : darkPieces;
-        if(opponentPieces.empty())
-            turnCounter += 2;
-        else
-            turnCounter++;
-    }
 
     void animateCam() {
         if(camAnimAngle == -1) return;
@@ -253,7 +245,6 @@ class Checkers {
                 eatenPiece = nullptr;
             } else {
                 nextTurn();
-                camAnimAngle = getTurn() == DARK_TURN ? 90 : 270;
             }
         }
     }
@@ -300,6 +291,15 @@ public:
 
     void prevPiece() {
         getTurn() == DARK_TURN ? darkPieceSelector.prev() : lightPieceSelector.prev();
+    }
+ 
+    void nextTurn() {
+        std::vector<Piece> &opponentPieces = getTurn() == DARK_TURN ? lightPieces : darkPieces;
+        if(opponentPieces.empty())
+            turnCounter += 2;
+        else
+            turnCounter++;
+        camAnimAngle = getTurn() == DARK_TURN ? 90 : 270;
     }
 
     void movePiece(MoveDirection direction) {
