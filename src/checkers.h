@@ -20,9 +20,10 @@ class Checkers {
     int turnCounter;
 
     Piece *animatedPiece;
+    Piece *eatenPiece;
     std::array<size_t,2> animateFrom;
     std::array<size_t,2> animateTo;
-    int animationStartTime;
+    int pieceAnimStartTime;
 
     void initBoard() {
         double boardOrigin = (double) -(squareSide * 4) + (squareSide / 2);
@@ -138,6 +139,16 @@ class Checkers {
             lightPieces.at(lightPieceSelector.get_val());
     }
 
+    std::array<size_t,2> calcNewPos(std::array<size_t,2> pos, MoveDirection direction) {
+        switch (direction) {
+        case UP_LEFT:   return getTurn() == DARK_TURN ? std::array{pos[0] - 1, pos[1] - 1} : std::array{pos[0] + 1, pos[1] + 1};
+        case UP_RIGHT:  return getTurn() == DARK_TURN ? std::array{pos[0] + 1, pos[1] - 1} : std::array{pos[0] - 1, pos[1] + 1};
+        case DOWN_LEFT: return getTurn() == DARK_TURN ? std::array{pos[0] - 1, pos[1] + 1} : std::array{pos[0] + 1, pos[1] - 1};
+        case DOWN_RIGHT:return getTurn() == DARK_TURN ? std::array{pos[0] + 1, pos[1] + 1} : std::array{pos[0] - 1, pos[1] - 1};
+        default: throw;
+        }
+    }
+
     bool isValidPos(std::array<size_t,2> pos) {
         return pos[0] < 8 && pos[1] < 8;
     }
@@ -157,6 +168,16 @@ class Checkers {
         turnCounter++;
     }
 
+    void animateCam() {
+        // const int t = glutGet(GLUT_ELAPSED_TIME);
+        // const int camSwipePeriod = 2000;
+        // while(true) {
+        //     cam.translate((t - startTime)/camSwipePeriod * ((getTurn() == DARK_TURN ? 270 : 90) - cam.get_pathAngle()));
+        //     glutPostRedisplay();
+        // }
+        // cam.set_pathAngle(getTurn() == DARK_TURN ? 270 : 90);
+    }
+
     void animateMove() {
         // std::cout << animatedPiece << std::endl;
         if(animatedPiece == NULL) return;
@@ -165,9 +186,9 @@ class Checkers {
         Square &destSquare = board[animateTo[0]][animateTo[1]];
 
         const int t = glutGet(GLUT_ELAPSED_TIME);
-        const int animationPeriod = 600;
-        if(animationStartTime == -1) animationStartTime = t;
-        double animationPercent = (double) (t - animationStartTime)/animationPeriod;
+        const int animationPeriod = 500;
+        if(pieceAnimStartTime == -1) pieceAnimStartTime = t;
+        double animationPercent = (double) (t - pieceAnimStartTime)/animationPeriod;
         double yMax = 1.5;
 
         double xDiff = destSquare.get_x() - orgSquare.get_x();
@@ -175,28 +196,36 @@ class Checkers {
         animatedPiece->set_x(orgSquare.get_x() + (xDiff * animationPercent));
         animatedPiece->set_z(orgSquare.get_z() + (zDiff * animationPercent));
         animatedPiece->set_y(yMax * sin(M_PI * animationPercent));
-        cam.translate(pow(animationPercent, (double) animationPeriod / 71.4285) * ((getTurn() == DARK_TURN ? 270 : 90) - cam.get_pathAngle()));
-        if(t > (animationStartTime + animationPeriod)) {
-            animatedPiece->set_x(destSquare.get_x());
-            animatedPiece->set_z(destSquare.get_z());
-            animatedPiece->set_y(0);
-            cam.set_pathAngle(getTurn() == DARK_TURN ? 270 : 90);
-            orgSquare.set_pcAlloc(NA);
-            animatedPiece->set_posOnBoard(animateTo);
-            destSquare.set_pcAlloc(animatedPiece->get_pcType());
-            animatedPiece = nullptr;
-            animationStartTime = -1;
-            nextTurn();
-        }
-    }
+        if(t >= (pieceAnimStartTime + animationPeriod)) {
+            //Set final positions
+                animatedPiece->set_x(destSquare.get_x());
+                animatedPiece->set_z(destSquare.get_z());
+                animatedPiece->set_y(0);
+            //Update location info
+                orgSquare.set_pcAlloc(NA);
+                animatedPiece->set_posOnBoard(animateTo);
+                destSquare.set_pcAlloc(animatedPiece->get_pcType());
+            //Clear piece animation data
+                animatedPiece = nullptr;
+                pieceAnimStartTime = -1;
+            //Delete eaten piece, if any, otherwise finish turn
+            if(eatenPiece != NULL) {
+                const std::array<size_t,2> &eatenPiecePos = eatenPiece->get_posOnBoard();
+                board[eatenPiecePos[0]][eatenPiecePos[1]].set_pcAlloc(NA);
 
-    std::array<size_t,2> calcNewPos(std::array<size_t,2> pos, MoveDirection direction) {
-        switch (direction) {
-        case UP_LEFT:   return getTurn() == DARK_TURN ? std::array{pos[0] - 1, pos[1] - 1} : std::array{pos[0] + 1, pos[1] + 1};
-        case UP_RIGHT:  return getTurn() == DARK_TURN ? std::array{pos[0] + 1, pos[1] - 1} : std::array{pos[0] - 1, pos[1] + 1};
-        case DOWN_LEFT: return getTurn() == DARK_TURN ? std::array{pos[0] - 1, pos[1] + 1} : std::array{pos[0] + 1, pos[1] - 1};
-        case DOWN_RIGHT:return getTurn() == DARK_TURN ? std::array{pos[0] + 1, pos[1] + 1} : std::array{pos[0] - 1, pos[1] - 1};
-        default: throw;
+                std::vector<Piece> &opponentPieces = getTurn() == DARK_TURN ? lightPieces : darkPieces;
+                Selector &opponentSelector = getTurn() == DARK_TURN ? lightPieceSelector : darkPieceSelector;
+                for(auto it = opponentPieces.begin(); it != opponentPieces.end(); it++) {
+                    if(&*it == eatenPiece) {
+                        opponentPieces.erase(it);
+                        break;
+                    }
+                }
+                opponentSelector.set_size(opponentPieces.size());
+                eatenPiece = nullptr;
+            } else {
+                nextTurn();
+            }
         }
     }
 
@@ -212,9 +241,10 @@ public:
         turnCounter = 0;
 
         animatedPiece = nullptr;
+        eatenPiece = nullptr;
         animateFrom = {0, 0};
         animateTo = {0, 0};
-        animationStartTime = -1;
+        pieceAnimStartTime = -1;
 
         cam = CircularCamera(camXZpathRadius, camYheight);
     }
@@ -255,13 +285,20 @@ public:
             animateFrom = pos;
             animateTo = newPos;
         } else if(isValidPos(newPos) && isOpponentPos(newPos)) {
+            std::array<size_t,2> eatenPos = newPos;
             try {
-                newPos = calcNewPos(newPos, direction);
+                newPos = calcNewPos(eatenPos, direction);
             } catch(const std::exception& e) {
                 return;
             }
             if(isValidPos(newPos) && isEmptyPos(newPos)) {
                 animatedPiece = &piece;
+                std::vector<Piece> &opponentPieces = getTurn() == DARK_TURN ? lightPieces : darkPieces;
+                for(Piece &piece : opponentPieces) {
+                    if(piece.get_posOnBoard() == eatenPos) {
+                        eatenPiece = &piece; break; 
+                    }
+                }
                 animateFrom = pos;
                 animateTo = newPos;
             }
