@@ -2,9 +2,11 @@
 #define GL_SILENCE_DEPRECATION
 #include <GLUT/glut.h>
 #else
-#include <windows.h>
+// #include <windows.h>
 #include <GL/glut.h>
 #endif
+
+#include <irrKlang.h>
 
 #include <stdlib.h>
 #include <math.h>

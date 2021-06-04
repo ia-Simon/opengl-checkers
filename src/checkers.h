@@ -19,6 +19,8 @@ class Checkers {
     Selector lightPieceSelector;
     int turnCounter;
 
+    irrklang::ISoundEngine *sndEngine;
+
     Piece *animatedPiece;
     Piece *eatenPiece;
     std::array<size_t,2> animateFrom;
@@ -243,6 +245,7 @@ class Checkers {
                 }
                 opponentSelector.set_size(opponentPieces.size());
                 eatenPiece = nullptr;
+                if(sndEngine != NULL) sndEngine->play2D("eatPiece.wav");
             } else {
                 nextTurn();
             }
@@ -259,6 +262,8 @@ public:
         darkPieceSelector = Selector(darkPieces.size());
         lightPieceSelector = Selector(lightPieces.size());
         turnCounter = 0;
+
+        sndEngine = irrklang::createIrrKlangDevice();
 
         animatedPiece = nullptr;
         eatenPiece = nullptr;
