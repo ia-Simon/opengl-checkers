@@ -208,8 +208,14 @@ class Checkers {
         Square &destSquare = board[animateTo[0]][animateTo[1]];
 
         const int t = glutGet(GLUT_ELAPSED_TIME);
-        const int animationPeriod = 500;
-        if(pieceAnimStartTime == -1) pieceAnimStartTime = t;
+        const int animationPeriod = 800;
+        if(pieceAnimStartTime == -1) {
+            pieceAnimStartTime = t;
+            if(sndEngine != NULL) {
+                sndEngine->play2D("movePiece.wav");
+                if(eatenPiece != NULL) sndEngine->play2D("eatPiece.wav");
+            }
+        }
         double animationPercent = (double) (t - pieceAnimStartTime)/animationPeriod;
         double yMax = 1.5;
 
@@ -245,7 +251,6 @@ class Checkers {
                 }
                 opponentSelector.set_size(opponentPieces.size());
                 eatenPiece = nullptr;
-                if(sndEngine != NULL) sndEngine->play2D("eatPiece.wav");
             } else {
                 nextTurn();
             }
