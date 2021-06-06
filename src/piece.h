@@ -110,10 +110,10 @@ public:
         if(glow) {
             const int t = glutGet(GLUT_ELAPSED_TIME);
             const int wirePeriod = 1500;
-            double wireIntensity = abs(((double) (t % wirePeriod) / (wirePeriod/2)) - 1);
+            double wireIntensity = 0.35 * cos(M_PI*2*((double) (t % wirePeriod) / wirePeriod)) + 0.65;
 
             glPushMatrix();
-            glColor4ub(43, 255, 15, wireIntensity * 200);
+            glColor4ub(0, 235, 196, wireIntensity * 255);
             glScaled(1.005, 1.005, 1.005);
             wirePiece();
             glPopMatrix();

@@ -45,10 +45,10 @@ public:
         if(available) {
             const int t = glutGet(GLUT_ELAPSED_TIME);
             const int pulsePeriod = 1500;
-            double intensity = abs(((double) (t % pulsePeriod) / (pulsePeriod/2)) - 1);
+            double intensity = 0.35 * cos(M_PI*2*((double) (t % pulsePeriod) / pulsePeriod)) + 0.65;
 
             glPushMatrix();
-            glColor4ub(43, 255, 15, intensity * 80);
+            glColor4ub(0, 235, 196, intensity * 100);
             glScaled(1.005, 1.005, 1.005);
             glutSolidCube(side);
             glPopMatrix();
