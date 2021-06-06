@@ -18,6 +18,7 @@ class Checkers {
     Selector darkPieceSelector;
     Selector lightPieceSelector;
     int turnCounter;
+    bool gameFinished;
 
     irrklang::ISoundEngine *sndEngine;
 
@@ -257,6 +258,13 @@ class Checkers {
         }
     }
 
+    void announceVictory() {
+        if((darkPieces.empty() || lightPieces.empty()) && !gameFinished) {
+            sndEngine->play2D("victory.wav");
+            gameFinished = true;
+        }
+    }
+
 public:
     CircularCamera cam;
 
@@ -267,6 +275,7 @@ public:
         darkPieceSelector = Selector(darkPieces.size());
         lightPieceSelector = Selector(lightPieces.size());
         turnCounter = 0;
+        gameFinished = false;
 
         sndEngine = irrklang::createIrrKlangDevice();
 
@@ -293,6 +302,7 @@ public:
         renderTable();
         renderBoard();
         renderPieces();
+        announceVictory();
     }
 
     void nextPiece() {
@@ -305,11 +315,10 @@ public:
  
     void nextTurn() {
         std::vector<Piece> &opponentPieces = getTurn() == DARK_TURN ? lightPieces : darkPieces;
-        if(opponentPieces.empty())
-            turnCounter += 2;
-        else
+        if(!opponentPieces.empty()) {
             turnCounter++;
-        camAnimAngle = getTurn() == DARK_TURN ? 90 : 270;
+            camAnimAngle = getTurn() == DARK_TURN ? 90 : 270;
+        }
     }
 
     void movePiece(MoveDirection direction) {
