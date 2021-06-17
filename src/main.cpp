@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_ambient);
 
     glGenTextures(textures.size(), textures.data());
-    loadTexture(textures[0], "wood.bmp", 800, 800);
+    loadTexture(textures[0], "textures/wood.bmp", 800, 800);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

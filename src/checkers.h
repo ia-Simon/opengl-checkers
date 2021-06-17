@@ -215,8 +215,8 @@ class Checkers {
         if(pieceAnimStartTime == -1) {
             pieceAnimStartTime = t;
             if(sndEngine != NULL) {
-                sndEngine->play2D("movePiece.wav");
-                if(eatenPiece != NULL) sndEngine->play2D("eatPiece.wav");
+                sndEngine->play2D("audios/movePiece.wav");
+                if(eatenPiece != NULL) sndEngine->play2D("audios/eatPiece.wav");
             }
         }
         double animationPercent = (double) (t - pieceAnimStartTime)/animationPeriod;
@@ -262,7 +262,7 @@ class Checkers {
 
     void announceVictory() {
         if((darkPieces.empty() || lightPieces.empty()) && !gameFinished) {
-            sndEngine->play2D("victory.wav");
+            sndEngine->play2D("audios/victory.wav");
             gameFinished = true;
         }
     }
