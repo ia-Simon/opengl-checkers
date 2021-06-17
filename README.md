@@ -5,13 +5,13 @@
 The library chosen for sound reprodution was [IrrKlang](https://www.ambiera.com/irrklang/).
 
 To install the library, follow the steps below:
-1. Unzip the `irrKlang.zip` archive somewhere safe in your computer, where you are sure not to delete it accidentally *e.g.* `/usr/local/CustomFolder/irrKlang/` if you are on Linux.
+1. Unzip the `irrKlang.zip` archive somewhere safe in your computer, where you are sure not to delete it accidentally, *e.g.* `/usr/local/CustomFolder/irrKlang/` if you are on Linux.
 2. Symlink/copy all header files from `irrKlang/include/` to a directory your editor/compiler is aware of *e.g.* `/usr/local/include/` on Linux.
 3. Grab the pre-compiled lib files from `irrKlang/bin/yourOSfolder/` according to your OS, and symlink/copy them to a directory your compiler is aware of *e.g.* `/usr/local/lib/` on Linux. If on Linux run ldconfig to update the library linker known libraries
     * MacOS X:  `macosx-gcc/*.dylib`
     * Linux:    `linux-gcc-64/*.so`
     * Windows:  `winx64-visualStudio/*.dll`
-4. Compile de program with the flag *-lIrrKlang* if on Linux/MacOS (no idea on how it would work on Windows). If on Linux, also include *-pthread* since irrKlang uses it.
+4. Compile the program with the flag *-lIrrKlang* if on Linux/MacOS (no idea on how it would work on Windows). If on Linux, also include *-pthread* since irrKlang uses it.
 
 ## Compilation
 ---

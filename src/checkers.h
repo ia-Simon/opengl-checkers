@@ -84,7 +84,9 @@ class Checkers {
         glTranslated(0, -tableThickness -squareSide/2, 0);
         glRotated(90, -1, 0, 0);
 
-        glColor3ub(127, 127, 127);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, textures[0]);
+        gluQuadricTexture(quad, GL_TRUE);
         // Table Top
         glPushMatrix();
         glRotated(180, 1, 0, 0);
@@ -95,9 +97,10 @@ class Checkers {
         glTranslated(0, 0, tableThickness);
         gluDisk(quad, 0, tableRadius, 256, 1);
         glPopMatrix();
+        glDisable(GL_TEXTURE_2D);
 
         // Table Border
-        glColor3ub(143, 10, 41);
+        glColor3ub(0, 0, 0);
         glPushMatrix();
         glTranslated(0, 0, tableThickness/2);
         glutSolidTorus(tableThickness/2, tableRadius, 256, 256);
@@ -202,7 +205,6 @@ class Checkers {
     }
 
     void animateMove() {
-        // std::cout << animatedPiece << std::endl;
         if(animatedPiece == NULL) return;
 
         Square &orgSquare = board[animateFrom[0]][animateFrom[1]];
@@ -267,6 +269,7 @@ class Checkers {
 
 public:
     CircularCamera cam;
+    std::array<GLuint,2> textures;
 
     Checkers(double sqSide, double camXZpathRadius, double camYheight) {
         squareSide = sqSide;

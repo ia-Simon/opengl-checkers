@@ -20,7 +20,7 @@
 #include "checkers.h"
 
 const GLfloat light_ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
-const GLfloat light_diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+const GLfloat light_diffuse[] = {0.7f, 0.7f, 0.7f, 1.0f};
 const GLfloat light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
 const GLfloat light_position[] = {2.0f, 5.0f, 5.0f, 0.0f};
 
@@ -38,6 +38,7 @@ float mouseYOrg = -1;
 
 static void idle(void);
 static void resize(int width, int height);
+static void loadTexture(GLuint &texture, const char *filename, int width, int height);
 static void display(void);
 static void keyboardCallback(unsigned char key, int x, int y);
 static void mouseCallback(int button, int state, int x, int y);
@@ -85,6 +86,15 @@ int main(int argc, char *argv[]) {
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
 
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_ambient);
+
+    glGenTextures(checkers.textures.size(), checkers.textures.data());
+    loadTexture(checkers.textures[0], "wood.bmp", 800, 800);
+    loadTexture(checkers.textures[1], "gold.bmp", 600, 360);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     glutMainLoop();
 
     return EXIT_SUCCESS;
@@ -104,6 +114,37 @@ static void resize(int width, int height) {
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+}
+
+static void loadTexture(GLuint &texture, const char *filename, int width, int height) {
+    unsigned char * data;
+    FILE *file = fopen(filename, "rb");
+
+    if (file == NULL)
+        return;
+    
+    data = (unsigned char *) malloc(width * height * 3);
+    fread(data, width * height * 3, 1, file);
+    fclose(file);
+    for(int i = 0; i < width * height; i++) {
+        int index = i * 3;
+        unsigned char B,R;
+        B = data[index];
+        R = data[index+2];
+
+        data[index] = R;
+        data[index+2] = B;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+    free(data);
 }
 
 static void keyboardCallback(unsigned char key, int x, int y) {
