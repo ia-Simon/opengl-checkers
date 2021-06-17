@@ -1,5 +1,13 @@
 # Checkers Game
 
+## Group Components
+---
+* Igor Amaral Simon     24887
+* Cláudio Rocha         108646
+* Lucca Marques         30764
+* Daniel Veronez        107880
+* Evelyn Volf           106981
+
 ## Sound Lib
 ---
 The library chosen for sound reprodution was [IrrKlang](https://www.ambiera.com/irrklang/).
