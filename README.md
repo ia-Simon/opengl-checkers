@@ -42,11 +42,12 @@ g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
 ---
 ```
  [Keyboard]                          | [Mouse]  _______
-                    ...   {-} {=}    |        /{M1}|    \
-      {Q}   {E}    ...     {[} {]}   |       | --------- |
-          {S}       ...              |       |           |
-{Shift} {Z}   {C}    ...             |        \         /
-                                     |          -------
+                                     |        /{M1}|    \  
+{Esc}                                |       |     |     |  
+                    ...   {-} {=}    |       |-----------|
+      {Q}   {E}    ...     {[} {]}   |       |           |
+          {S}       ...              |        \         /
+{Shift} {Z}   {C}    ...             |          -------
 ```
 * Keyboard:
     * Q: Move Up-Left
@@ -59,6 +60,7 @@ g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
     * -: Decrease mouse sensitivity
     * =: Increase mouse sensitivity
     * Shift: Changes the action done by the mouse Y-axis
+    * Esc: quits from the game
 * Mouse:
     * M1: Moves the camera
         * X-axis: Moves the camera around a circle of mutable radius
