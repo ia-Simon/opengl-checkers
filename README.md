@@ -19,6 +19,8 @@ This project was developed using OpenGL/GLU/GLUT + IrrKlang, using C++17 syntax
 
 Compile with the flags for OpenGL/GLU/GLUT and IrrKlang libs, and `--std=c++17` for a compiler with c++17 capabilities.
 
+Compile the game in the same folder as src/, audios/ and textures/.
+
 ## Controls
 ---
 ```
