@@ -269,7 +269,6 @@ class Checkers {
 
 public:
     CircularCamera cam;
-    std::array<GLuint,2> textures;
 
     Checkers(double sqSide, double camXZpathRadius, double camYheight) {
         squareSide = sqSide;

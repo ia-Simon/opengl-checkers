@@ -13,11 +13,6 @@
 #include <iostream>
 #include <array>
 #include <vector>
-#include "camera.h"
-#include "piece.h"
-#include "square.h"
-#include "selector.h"
-#include "checkers.h"
 
 const GLfloat light_ambient[] = {0.3f, 0.3f, 0.3f, 1.0f};
 const GLfloat light_diffuse[] = {0.7f, 0.7f, 0.7f, 1.0f};
@@ -28,6 +23,14 @@ const GLfloat mat_ambient[] = {0.7f, 0.7f, 0.7f, 1.0f};
 const GLfloat mat_diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
 const GLfloat mat_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
 const GLfloat high_shininess[] = {100.0f};
+
+std::array<GLuint,1> textures;
+
+#include "camera.h"
+#include "piece.h"
+#include "square.h"
+#include "selector.h"
+#include "checkers.h"
 
 Checkers checkers = Checkers(2.0f, 16.0f, 12.0f);
 bool mouseShiftMod = false;
@@ -88,9 +91,8 @@ int main(int argc, char *argv[]) {
 
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_ambient);
 
-    glGenTextures(checkers.textures.size(), checkers.textures.data());
-    loadTexture(checkers.textures[0], "wood.bmp", 800, 800);
-    loadTexture(checkers.textures[1], "gold.bmp", 600, 360);
+    glGenTextures(textures.size(), textures.data());
+    loadTexture(textures[0], "wood.bmp", 800, 800);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -137,7 +139,7 @@ static void loadTexture(GLuint &texture, const char *filename, int width, int he
     }
 
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
