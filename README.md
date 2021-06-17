@@ -1,12 +1,16 @@
 # Checkers Game
 
-## Group Components
+## General
 ---
-* Igor Amaral Simon     24887
-* Cláudio Rocha         108646
-* Lucca Marques         30764
-* Daniel Veronez        107880
-* Evelyn Volf           106981
+Group components:
+
+* Igor Amaral Simon:    24887
+* Cláudio Rocha:        108646
+* Lucca Marques:        30764
+* Daniel Veronez:       107880
+* Evelyn Volf:          106981
+
+[Github Repository](https://github.com/ia-Simon/opengl-checkers.git)
 
 ## Sound Lib
 ---
@@ -28,6 +32,11 @@ This project was developed using OpenGL/GLU/GLUT + IrrKlang, using C++17 syntax
 Compile with the flags for OpenGL/GLU/GLUT and IrrKlang libs, and `--std=c++17` for a compiler with c++17 capabilities.
 
 Compile the game in the same folder as src/, audios/ and textures/.
+
+On Linux, the compilation command should look something like:
+```
+g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
+```
 
 ## Controls
 ---
