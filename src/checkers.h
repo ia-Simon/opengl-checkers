@@ -100,7 +100,7 @@ class Checkers {
         glDisable(GL_TEXTURE_2D);
 
         // Table Border
-        glColor3ub(0, 0, 0);
+        glColor3ub(46, 99, 5);
         glPushMatrix();
         glTranslated(0, 0, tableThickness/2);
         glutSolidTorus(tableThickness/2, tableRadius, 256, 256);
@@ -109,13 +109,13 @@ class Checkers {
         // Board Border
         glPushMatrix();
         glRotated(45, 0, 0, 1);
-        glColor3ub(59, 30, 2);
+        glColor3ub(39, 10, 0);
         glTranslated(0, 0, tableThickness);
         glutSolidTorus(squareSide * 0.24, (squareSide * 8 * sqrt(2)) / 2, 256, 4);
-        glColor3ub(255, 228, 153);
+        glColor3ub(205, 178, 103);
         glTranslated(0, 0, squareSide/5);
         glutSolidTorus(squareSide * 0.24, (squareSide * 8 * sqrt(2)) / 2, 256, 4);
-        glColor3ub(59, 30, 2);
+        glColor3ub(39, 10, 0);
         glScaled(1.01, 1.01, 1);
         glTranslated(0, 0, squareSide/5);
         glutSolidTorus(squareSide * 0.125, (squareSide * 8 * sqrt(2)) / 2, 256, 4);
