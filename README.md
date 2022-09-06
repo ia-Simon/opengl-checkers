@@ -12,30 +12,42 @@ Group components:
 
 [Github Repository](https://github.com/ia-Simon/opengl-checkers.git)
 
-## Sound Lib
+## Sound Library
 ---
-The library chosen for sound reprodution was [IrrKlang](https://www.ambiera.com/irrklang/).
+The library chosen for sound reprodution is [IrrKlang](https://www.ambiera.com/irrklang/).
 
-To install the library, follow the steps below:
-1. Unzip the `irrKlang.zip` archive somewhere safe in your computer, where you are sure not to delete it accidentally, *e.g.* `/usr/local/CustomFolder/irrKlang/` if you are on Linux.
-2. Symlink/copy all header files from `irrKlang/include/` to a directory your editor/compiler is aware of *e.g.* `/usr/local/include/` on Linux.
-3. Grab the pre-compiled lib files from `irrKlang/bin/yourOSfolder/` according to your OS, and symlink/copy them to a directory your compiler is aware of *e.g.* `/usr/local/lib/` on Linux. If on Linux run ldconfig to update the library linker known libraries
-    * MacOS X:  `macosx-gcc/*.dylib`
-    * Linux:    `linux-gcc-64/*.so`
-    * Windows:  `winx64-visualStudio/*.dll`
-4. Compile the program with the flag *-lIrrKlang* if on Linux/MacOS (no idea on how it would work on Windows). If on Linux, also include *-pthread* since irrKlang uses it.
+To install the library manually, follow the steps below:
+
+1. Extract `irrKlang.tar.gz` somewhere safe, where you're sure not to delete it accidentally, *e.g.* `/usr/local/Ext/` (UNIX-like system). Below is the command for UNIX-like systems:
+    ```sh
+    $ tar -xzvf irrKlang.tar.gz irrKlang
+    ```
+
+2. Symlink/copy all header files from `irrKlang/include/` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/include/` on Linux.
+
+3. Symlink/copy all compiled lib files from `irrKlang/bin/<your-OS-folder>` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/lib/` (UNIX-like system). The compiled lib file changes according to your OS:
+
+        MacOSX:   `irrKlang/bin/macosx-gcc/*.dylib`
+        Linux:    `irrKlang/bin/linux-gcc-64/*.so`
+        Windows:  `irrKlang/bin/winx64-visualStudio/*.dll`
+
+    3.1. If on Linux, run `ldconfig` to update the library linker list of known libraries
+
+4. Compile the program with the flags **-lIrrKlang** and **-pthread** if on a UNIX-like system (no idea how it would be done on Windows).
 
 ## Compilation
 ---
-This project was developed using OpenGL/GLU/GLUT + IrrKlang, using C++17 syntax
+This project was developed using OpenGL/GLU/GLUT + IrrKlang, on a C++17 syntax.
 
 Compile with the flags for OpenGL/GLU/GLUT and IrrKlang libs, and `--std=c++17` for a compiler with c++17 capabilities.
 
 Compile the game in the same folder as src/, audios/ and textures/.
 
-On Linux, the compilation command should look something like:
-```
-g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
+Below are the commands used to compile this game in Linux and MacOSX:
+```sh
+linux>$ g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
+
+macosx>$ g++ src/main.cpp --std=c++17 -framework OpenGL -framework GLUT -lIrrKlang -pthread -o checkers
 ```
 
 ## Controls
@@ -63,5 +75,5 @@ g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
     * Esc: quits from the game
 * Mouse:
     * M1: Moves the camera
-        * X-axis: Moves the camera around a circle of mutable radius
-        * Y-axis: If {Shift} is active, changes the height Y of the camera; otherwise changes the radius of the circle
+        * X-axis: Moves the camera around a circle centered on the middle of the table
+        * Y-axis: If {Shift} is active, changes the height Y of the camera; otherwise changes the radius of the circle (a.k.a. the distance from the table)
