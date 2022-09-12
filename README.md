@@ -2,15 +2,7 @@
 
 ## General
 ---
-Group components:
-
-* Igor Amaral Simon:    24887
-* Cláudio Rocha:        108646
-* Lucca Marques:        30764
-* Daniel Veronez:       107880
-* Evelyn Volf:          106981
-
-[Github Repository](https://github.com/ia-Simon/opengl-checkers.git)
+Simple checkers game written in pure OpenGL.
 
 ## Sound Library
 ---
@@ -54,7 +46,13 @@ $ sudo ldconfig
 
 ## Compilation
 ---
-This project was developed using OpenGL/GLU/GLUT + IrrKlang, on a C++17 syntax.
+This project was developed using OpenGL/GLU/GLUT + IrrKlang, on a C++17 syntax. OpenGL should be installed by default in MacOSX; to install it on Linux, use the following command:
+
+```sh
+# Linux:
+$ sudo apt update
+$ sudo apt install freeglut3-dev
+```
 
 Compile with the flags for OpenGL/GLU/GLUT and IrrKlang libs, and `--std=c++17` for a compiler with c++17 capabilities.
 
