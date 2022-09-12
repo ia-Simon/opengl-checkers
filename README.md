@@ -21,7 +21,7 @@ To install the library manually, follow the steps below:
 1. Extract `irrKlang.tar.gz` somewhere safe, where you're sure to not delete it, *e.g.* `/usr/local/Ext/`.
 
 ```sh
-$ mkdir /usr/local/Ext
+$ sudo mkdir /usr/local/Ext
 $ cd /usr/local/Ext
 $ sudo tar -xzvf irrKlang.tar.gz irrKlang
 ```
@@ -29,27 +29,27 @@ $ sudo tar -xzvf irrKlang.tar.gz irrKlang
 2. Symlink/copy all header files from `./irrKlang/include/` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/include/`.
 
 ```sh
-$ ln -s ./irrKlang/include/*.h  /usr/local/include/
+$ sudo ln -s $(pwd)/irrKlang/include/*.h  /usr/local/include/
 ```
 
 3. Symlink/copy all compiled lib files from `./irrKlang/bin/<your-os-folder>/` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/lib/`.
 
 ```sh
 # MacOSX:   
-# ./irrKlang/bin/macosx-gcc/*.dylib
+# irrKlang/bin/macosx-gcc/*.dylib
 # 
 # Linux:    
-# ./irrKlang/bin/linux-gcc-64/*.so
+# irrKlang/bin/linux-gcc-64/*.so
 #
 # Windows:  
-# ./irrKlang/bin/winx64-visualStudio/*.dll
-$ ln -s <path/to/your/os/libs>  /usr/local/lib/
+# irrKlang/bin/winx64-visualStudio/*.dll
+$ sudo ln -s $(pwd)/<path/to/your/os/libs>  /usr/local/lib/
 ```
 
 4. If on Linux, run `ldconfig` to update the library linker list of known libraries.
 
 ```sh
-$ ldconfig
+$ sudo ldconfig
 ```
 
 ## Compilation
