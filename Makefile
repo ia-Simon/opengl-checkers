@@ -17,4 +17,8 @@ run-linux:
 	rm -rf irrKlang
 
 run-macosx:
-	# TODO
+	tar -xzvf irrKlang.tar.gz irrKlang
+	g++ src/main.cpp --std=c++17 -framework OpenGL -framework GLUT -I./irrKlang/include -L./irrKlang/bin/macosx-gcc -lirrklang -pthread -o checkers
+	DYLD_LIBRARY_PATH=$$(pwd)/irrKlang/bin/macosx-gcc ./checkers
+	rm checkers
+	rm -rf irrKlang
