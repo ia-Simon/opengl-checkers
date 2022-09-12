@@ -1,74 +1,44 @@
-# Checkers Game
+# OpenGL Checkers
 
-## General
----
-Simple checkers game written in pure OpenGL.
+A simple checkers game developed entirely using the basics of OpenGL, using a lightweight audio engine library.
 
-## Sound Library
----
-The library chosen for sound reprodution is [IrrKlang](https://www.ambiera.com/irrklang/).
+## Graphics Engine
 
-To install the library manually, follow the steps below:
+The library used for rendering is OpenGL/GLUT. It is usually installed by default on MacOSX machines, but needs to be installed 
+in Linux distros.
 
-1. Extract `irrKlang.tar.gz` somewhere safe, where you're sure to not delete it, *e.g.* `/usr/local/Ext/`.
 
+## Audio Engine
+
+The library chosen for audio reprodution is [IrrKlang](https://www.ambiera.com/irrklang/).
+
+
+## Build and Run
+
+To run this application, simply execute de Makefile command according to your platform. There may be some initial steps required 
+before running the game, which will be covered individually below.
+
+### OS: Linux
+
+1. Install the free and open source distribution of OpenGL/GLUT following the steps below:
 ```sh
-$ sudo mkdir /usr/local/Ext
-$ cd /usr/local/Ext
-$ sudo tar -xzvf irrKlang.tar.gz irrKlang
-```
-
-2. Symlink/copy all header files from `./irrKlang/include/` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/include/`.
-
-```sh
-$ sudo ln -s $(pwd)/irrKlang/include/*.h  /usr/local/include/
-```
-
-3. Symlink/copy all compiled lib files from `./irrKlang/bin/<your-os-folder>/` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/lib/`.
-
-```sh
-# MacOSX:   
-# irrKlang/bin/macosx-gcc/*.dylib
-# 
-# Linux:    
-# irrKlang/bin/linux-gcc-64/*.so
-#
-# Windows:  
-# irrKlang/bin/winx64-visualStudio/*.dll
-$ sudo ln -s $(pwd)/<path/to/your/os/libs>  /usr/local/lib/
-```
-
-4. If on Linux, run `ldconfig` to update the library linker list of known libraries.
-
-```sh
-$ sudo ldconfig
-```
-
-## Compilation
----
-This project was developed using OpenGL/GLU/GLUT + IrrKlang, on a C++17 syntax. OpenGL should be installed by default in MacOSX; to install it on Linux, use the following command:
-
-```sh
-# Linux:
 $ sudo apt update
 $ sudo apt install freeglut3-dev
 ```
 
-Compile with the flags for OpenGL/GLU/GLUT and IrrKlang libs, and `--std=c++17` for a compiler with c++17 capabilities.
-
-Compile the game in the same folder as src/, audios/ and textures/.
-
-Below are the commands used to compile this game in Linux and MacOSX:
+2. Call the Make command for Linux:
 ```sh
-# Linux:
-$ g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
+$ make run-linux
+```
 
-# MacOSX:
-$ g++ src/main.cpp --std=c++17 -framework OpenGL -framework GLUT -lirrklang -pthread -o checkers
+### OS: MacOSX
+
+1. Call the Make command for MacOSX:
+```sh
+$ make run-macosx
 ```
 
 ## Controls
----
 ```
  [Keyboard]                          | [Mouse]  _______
                                      |        /{M1}|    \  
