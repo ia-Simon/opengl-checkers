@@ -64,7 +64,7 @@ Below are the commands used to compile this game in Linux and MacOSX:
 $ g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
 
 # MacOSX:
-$ g++ src/main.cpp --std=c++17 -framework OpenGL -framework GLUT -lIrrKlang -pthread -o checkers
+$ g++ src/main.cpp --std=c++17 -framework OpenGL -framework GLUT -lirrklang -pthread -o checkers
 ```
 
 ## Controls
