@@ -18,22 +18,39 @@ The library chosen for sound reprodution is [IrrKlang](https://www.ambiera.com/i
 
 To install the library manually, follow the steps below:
 
-1. Extract `irrKlang.tar.gz` somewhere safe, where you're sure not to delete it accidentally, *e.g.* `/usr/local/Ext/` (UNIX-like system). Below is the command for UNIX-like systems:
-    ```sh
-    $ tar -xzvf irrKlang.tar.gz irrKlang
-    ```
+1. Extract `irrKlang.tar.gz` somewhere safe, where you're sure to not delete it, *e.g.* `/usr/local/Ext/`.
 
-2. Symlink/copy all header files from `irrKlang/include/` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/include/` on Linux.
+```sh
+$ mkdir /usr/local/Ext
+$ cd /usr/local/Ext
+$ sudo tar -xzvf irrKlang.tar.gz irrKlang
+```
 
-3. Symlink/copy all compiled lib files from `irrKlang/bin/<your-OS-folder>` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/lib/` (UNIX-like system). The compiled lib file changes according to your OS:
+2. Symlink/copy all header files from `./irrKlang/include/` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/include/`.
 
-        MacOSX:   `irrKlang/bin/macosx-gcc/*.dylib`
-        Linux:    `irrKlang/bin/linux-gcc-64/*.so`
-        Windows:  `irrKlang/bin/winx64-visualStudio/*.dll`
+```sh
+$ ln -s ./irrKlang/include/*.h  /usr/local/include/
+```
 
-    3.1. If on Linux, run `ldconfig` to update the library linker list of known libraries
+3. Symlink/copy all compiled lib files from `./irrKlang/bin/<your-os-folder>/` to a directory your editor/compiler is aware of, *e.g.* `/usr/local/lib/`.
 
-4. Compile the program with the flags **-lIrrKlang** and **-pthread** if on a UNIX-like system (no idea how it would be done on Windows).
+```sh
+# MacOSX:   
+# ./irrKlang/bin/macosx-gcc/*.dylib
+# 
+# Linux:    
+# ./irrKlang/bin/linux-gcc-64/*.so
+#
+# Windows:  
+# ./irrKlang/bin/winx64-visualStudio/*.dll
+$ ln -s <path/to/your/os/libs>  /usr/local/lib/
+```
+
+4. If on Linux, run `ldconfig` to update the library linker list of known libraries.
+
+```sh
+$ ldconfig
+```
 
 ## Compilation
 ---
@@ -45,9 +62,11 @@ Compile the game in the same folder as src/, audios/ and textures/.
 
 Below are the commands used to compile this game in Linux and MacOSX:
 ```sh
-linux>$ g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
+# Linux:
+$ g++ src/main.cpp --std=c++17 -lGL -lGLU -lglut -lIrrKlang -pthread -o checkers
 
-macosx>$ g++ src/main.cpp --std=c++17 -framework OpenGL -framework GLUT -lIrrKlang -pthread -o checkers
+# MacOSX:
+$ g++ src/main.cpp --std=c++17 -framework OpenGL -framework GLUT -lIrrKlang -pthread -o checkers
 ```
 
 ## Controls
